@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
 const UserContext= createContext(null)
+const UserUpdateContext = createContext(null)
 
 function UserProvider({ children }) {
   const [user, setUser] = useState(null)
   return (
-    <UserContext.Provider value={{ user, setUser }}>
-      {children}
+    <UserContext.Provider value={user}>
+      <UserUpdateContext.Provider value={setUser}>
+        {children}
+      </UserUpdateContext.Provider>
     </UserContext.Provider>
   ) 
 }
@@ -15,11 +18,15 @@ function useUser() {
   return useContext(UserContext)
 }
 
+function useUserUpdate() {
+  return useContext(UserUpdateContext)
+}
+
 function UserInfo() {
   useEffect(() => {
     console.log('UserInfo rerendering')
   })
-  const { user } = useUser()
+  const user = useUser()
   if (!user) return <div>사용자 정보가 없습니다.</div>
   return <div>{user.username}</div>
 }
@@ -28,7 +35,7 @@ function Authenticate() {
   useEffect(() => {
     console.log('Authenticate rerendering')
   })
-  const { setUser } = useUser()
+  const setUser = useUserUpdate()
   const onClick = () => {
     setUser({ username: 'seolranlee' })
   }
